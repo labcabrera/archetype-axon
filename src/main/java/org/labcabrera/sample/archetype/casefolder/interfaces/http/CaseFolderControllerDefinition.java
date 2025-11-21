@@ -51,10 +51,10 @@ public interface CaseFolderControllerDefinition {
     @PostMapping
     @Operation(summary = "Create new case folder", description = "Creates a new case folder using the CQRS pattern. Sends a command that emits an event.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Case folder created successfully", content = @Content(schema = @Schema(implementation = CaseFolderDto.class))),
+        @ApiResponse(responseCode = "201", description = "Case folder created successfully. Location header contains the URI of the created resource."),
         @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    ResponseEntity<CaseFolderDto> create(
+    ResponseEntity<Void> create(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Case folder data to create", required = true, content = @Content(schema = @Schema(implementation = CreateCaseFolderRequest.class))) @RequestBody CreateCaseFolderRequest request);
 
     @PatchMapping("/{caseFolderId}")

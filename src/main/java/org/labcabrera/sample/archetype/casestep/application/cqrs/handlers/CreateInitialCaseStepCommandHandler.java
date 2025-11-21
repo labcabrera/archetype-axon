@@ -7,12 +7,10 @@ import org.axonframework.eventhandling.EventHandler;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.commands.CreateInitialCaseStepCommand;
-import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepEventBusPort;
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
 import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
 import org.labcabrera.sample.archetype.casestep.domain.StepStatus;
 import org.labcabrera.sample.archetype.casestep.domain.StepType;
-import org.labcabrera.sample.archetype.casestep.domain.events.CaseStepCreatedEvent;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
 import org.labcabrera.sample.archetype.shared.domain.exceptions.BadRequestException;
 import org.springframework.stereotype.Component;
@@ -28,7 +26,6 @@ public class CreateInitialCaseStepCommandHandler {
     private final CaseStepRepository caseStepRepository;
     private final CaseFolderRepository caseFolderRepository;
     private final SecurityPort securityPort;
-    private final CaseStepEventBusPort caseStepEventBusPort;
 
     @EventHandler
     public CaseStep handle(CreateInitialCaseStepCommand command) {
@@ -39,7 +36,6 @@ public class CreateInitialCaseStepCommandHandler {
         log.debug("Current user: {}", user.username());
         var caseStep = createInitialCaseStep(caseFolder);
         var created = caseStepRepository.save(caseStep);
-        publishCaseStepCreatedEvent(created);
         return created;
     }
 
@@ -54,11 +50,6 @@ public class CreateInitialCaseStepCommandHandler {
             .createdAt(LocalDateTime.now())
             .build();
         return caseStep;
-    }
-
-    private void publishCaseStepCreatedEvent(CaseStep caseStep) {
-        var event = new CaseStepCreatedEvent(caseStep.getId(), caseStep.getCaseFolderId());
-        caseStepEventBusPort.publish(event);
     }
 
 }

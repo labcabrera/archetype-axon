@@ -1,5 +1,7 @@
 package org.labcabrera.sample.archetype.casefolder.interfaces.http;
 
+import java.net.URI;
+
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -57,7 +59,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     }
 
     @Override
-    public ResponseEntity<CaseFolderDto> create(@RequestBody @Validated CreateCaseFolderRequest request) {
+    public ResponseEntity<Void> create(@RequestBody @Validated CreateCaseFolderRequest request) {
         var user = securityPort.requireCurrentUser();
         var command = new CreateCaseFolderCommand(
             request.name(),
@@ -66,9 +68,8 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             request.idCard().type(),
             request.idCard().number(),
             user.username());
-        CaseFolder caseFolder = commandGateway.sendAndWait(command);
-        var caseFolderDto = mapper.toDto(caseFolder);
-        return ResponseEntity.status(201).body(caseFolderDto);
+        String caseFolderId = commandGateway.sendAndWait(command);
+        return ResponseEntity.created(URI.create("/api/v1/case-folders/" + caseFolderId)).build();
     }
 
     @Override

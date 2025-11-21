@@ -2,7 +2,6 @@ package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderCommand;
-import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderEventBusPort;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdatedEvent;
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UpdateCaseFolderCommandHandler {
 
     private final CaseFolderRepository caseFolderRepository;
-    private final CaseFolderEventBusPort caseFolderEventBusPort;
     private final Guard<CaseFolder> caseFolderGuard;
     private final SecurityPort securityPort;
 
@@ -35,7 +33,6 @@ public class UpdateCaseFolderCommandHandler {
         merge(existing, command);
         existing.normalize();
         var caseFolder = caseFolderRepository.update(existing);
-        sendNotification(caseFolder);
         return caseFolder;
     }
 
@@ -56,14 +53,5 @@ public class UpdateCaseFolderCommandHandler {
         if (!modified) {
             throw new NotModifiedException("case-folder.msg.err.not-modified");
         }
-    }
-
-    private void sendNotification(CaseFolder caseFolder) {
-        var event = new CaseFolderUpdatedEvent(
-            caseFolder.getId(),
-            caseFolder.getName(),
-            caseFolder.getFirstSurname(),
-            caseFolder.getLastSurname());
-        caseFolderEventBusPort.publish(event);
     }
 }

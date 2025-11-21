@@ -2,7 +2,6 @@ package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
-import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderEventBusPort;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
 import org.labcabrera.sample.archetype.casefolder.domain.IdCard;

@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
+import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -59,6 +61,8 @@ public class CaseFolder {
         this.idCard = new IdCard(command.idCardType(), command.idCardNumber());
         this.createdAt = LocalDateTime.now();
         this.owner = command.owner();
+        this.normalize();
+        AggregateLifecycle.apply(new CaseFolderCreatedEvent(this));
     }
 
     public CaseFolder normalize() {
