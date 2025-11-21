@@ -17,32 +17,32 @@ public class CaseFolderProjection {
 
     private final CaseFolderRepository caseFolderRepository;
 
-    @EventHandler
-    public void on(CaseFolderCreatedEvent event) {
-        log.info("Saving case folder {}", event.id());
-        CaseFolderAggregate aggregate = CaseFolderAggregate.builder()
-            .id(event.id())
-            .status(event.status())
-            .name(event.name())
-            .firstSurname(event.firstSurname())
-            .lastSurname(event.lastSurname())
-            .idCard(event.idCard())
-            .owner(event.owner())
-            .createdAt(event.createdAt())
-            .build();
-        caseFolderRepository.save(aggregate);
-    }
+    // @EventHandler
+    // public void on(CaseFolderCreatedEvent event) {
+    //     log.info("Saving case folder {}", event.id());
+    //     CaseFolderAggregate aggregate = CaseFolderAggregate.builder()
+    //         .id(event.id())
+    //         .status(event.status())
+    //         .name(event.name())
+    //         .firstSurname(event.firstSurname())
+    //         .lastSurname(event.lastSurname())
+    //         .idCard(event.idCard())
+    //         .owner(event.owner())
+    //         .createdAt(event.createdAt())
+    //         .build();
+    //     caseFolderRepository.save(aggregate);
+    // }
 
-    @EventHandler
-    public void on(CaseFolderUpdatedEvent event) {
-        log.info("Updating case folder {}", event.id());
-        caseFolderRepository.findById(event.id()).ifPresent(aggregate -> {
-            aggregate.setName(event.name());
-            aggregate.setFirstSurname(event.firstSurname());
-            aggregate.setLastSurname(event.lastSurname());
-            aggregate.setUpdatedAt(event.updatedAt());
-            caseFolderRepository.update(aggregate);
-        });
-    }
+    // @EventHandler
+    // public void on(CaseFolderUpdatedEvent event) {
+    //     log.info("Updating case folder {}", event.id());
+    //     caseFolderRepository.findById(event.id()).ifPresent(aggregate -> {
+    //         aggregate.setName(event.name());
+    //         aggregate.setFirstSurname(event.firstSurname());
+    //         aggregate.setLastSurname(event.lastSurname());
+    //         aggregate.setUpdatedAt(event.updatedAt());
+    //         caseFolderRepository.update(aggregate);
+    //     });
+    // }
 
 }

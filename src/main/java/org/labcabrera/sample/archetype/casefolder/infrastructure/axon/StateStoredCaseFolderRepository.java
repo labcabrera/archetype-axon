@@ -1,13 +1,18 @@
 package org.labcabrera.sample.archetype.casefolder.infrastructure.axon;
 
+import java.util.concurrent.Callable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.axonframework.common.lock.Lock;
 import org.axonframework.common.lock.LockFactory;
 import org.axonframework.eventhandling.EventBus;
+import org.axonframework.messaging.ScopeDescriptor;
 import org.axonframework.messaging.unitofwork.CurrentUnitOfWork;
 import org.axonframework.modelling.command.Aggregate;
 import org.axonframework.modelling.command.AggregateNotFoundException;
 import org.axonframework.modelling.command.Repository;
-import org.axonframework.modelling.command.RepositoryProvider;
 import org.axonframework.modelling.command.inspection.AggregateModel;
 import org.axonframework.modelling.command.inspection.AnnotatedAggregate;
 import org.axonframework.modelling.command.inspection.AnnotatedAggregateMetaModelFactory;
@@ -34,23 +39,17 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
     }
 
     @Override
-    public Aggregate<CaseFolderAggregate> newInstance(java.util.concurrent.Callable<CaseFolderAggregate> factoryMethod) throws Exception {
+    public Aggregate<CaseFolderAggregate> newInstance(@Nonnull Callable<CaseFolderAggregate> factoryMethod) throws Exception {
         Lock lock = null;
         try {
-            CaseFolderAggregate root = factoryMethod.call();
-            String aggregateIdentifier = aggregateModel.getIdentifier(root).toString();
-
+            // Initialize the aggregate first, which sets up the Axon scope
+            AnnotatedAggregate<CaseFolderAggregate> aggregate = AnnotatedAggregate.initialize(factoryMethod, aggregateModel, eventBus);
+            String aggregateIdentifier = aggregate.identifier().toString();
             lock = lockFactory.obtainLock(aggregateIdentifier);
-
-            AnnotatedAggregate<CaseFolderAggregate> aggregate = AnnotatedAggregate.initialize(
-                root, aggregateModel, eventBus);
-
-            // Save on commit
             CurrentUnitOfWork.get().onPrepareCommit(uow -> {
                 log.debug("Saving new aggregate: {}", aggregateIdentifier);
                 aggregate.invoke(caseFolderRepository::save);
             });
-
             return aggregate;
         }
         finally {
@@ -61,30 +60,25 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
     }
 
     @Override
-    public Aggregate<CaseFolderAggregate> load(String aggregateIdentifier, Long expectedVersion) {
+    public Aggregate<CaseFolderAggregate> load(@Nonnull String aggregateIdentifier, @Nullable Long expectedVersion) {
+        log.debug("Loading aggregate with expected version: {}", aggregateIdentifier);
         return load(aggregateIdentifier);
     }
 
     @Override
-    public Aggregate<CaseFolderAggregate> load(String aggregateIdentifier) {
+    public Aggregate<CaseFolderAggregate> load(@Nonnull String aggregateIdentifier) {
         Lock lock = null;
         try {
             lock = lockFactory.obtainLock(aggregateIdentifier);
 
             log.debug("Loading aggregate: {}", aggregateIdentifier);
             CaseFolderAggregate root = caseFolderRepository.findById(aggregateIdentifier)
-                .orElseThrow(() -> new AggregateNotFoundException(aggregateIdentifier,
-                    "CaseFolder aggregate not found"));
-
-            AnnotatedAggregate<CaseFolderAggregate> aggregate = AnnotatedAggregate.initialize(
-                root, aggregateModel, eventBus);
-
-            // Update on commit
+                .orElseThrow(() -> new AggregateNotFoundException(aggregateIdentifier, "CaseFolder aggregate not found"));
+            AnnotatedAggregate<CaseFolderAggregate> aggregate = AnnotatedAggregate.initialize(root, aggregateModel, eventBus);
             CurrentUnitOfWork.get().onPrepareCommit(uow -> {
                 log.debug("Updating aggregate: {}", aggregateIdentifier);
                 aggregate.invoke(caseFolderRepository::update);
             });
-
             return aggregate;
         }
         finally {
@@ -95,13 +89,12 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
     }
 
     @Override
-    public void send(org.axonframework.messaging.Message<?> message,
-        org.axonframework.messaging.ScopeDescriptor scopeDescription) throws Exception {
+    public void send(org.axonframework.messaging.Message<?> message, ScopeDescriptor scopeDescription) throws Exception {
         // Not needed for command handling
     }
 
     @Override
-    public boolean canResolve(org.axonframework.messaging.ScopeDescriptor scopeDescription) {
+    public boolean canResolve(ScopeDescriptor scopeDescription) {
         return false;
     }
 }
