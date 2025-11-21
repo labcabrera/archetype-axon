@@ -9,6 +9,9 @@ import org.axonframework.serialization.json.JacksonSerializer;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.casefolder.infrastructure.axon.StateStoredCaseFolderRepository;
+import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.infrastructure.axon.StateStoredCaseStepRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,6 +32,14 @@ public class AxonConfiguration {
         LockFactory lockFactory,
         EventBus eventBus) {
         return new StateStoredCaseFolderRepository(caseFolderRepository, lockFactory, eventBus);
+    }
+
+    @Bean
+    public Repository<CaseStep> caseStepAggregateRepository(
+        CaseStepRepository caseStepRepository,
+        LockFactory lockFactory,
+        EventBus eventBus) {
+        return new StateStoredCaseStepRepository(caseStepRepository, lockFactory, eventBus);
     }
 
     @Bean

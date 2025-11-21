@@ -7,9 +7,11 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CompleteCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.DeleteCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderCommand;
+import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCompletedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdatedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
@@ -60,7 +62,7 @@ public class CaseFolderAggregate {
     public CaseFolderAggregate(CreateCaseFolderCommand command) {
         log.info("Creating case folder aggregate {}", command.idCardNumber());
         this.id = UUID.randomUUID().toString();
-        this.status = CaseFolderStatus.ACTIVE;
+        this.status = CaseFolderStatus.PARTIALLY_CREATED;
         this.name = command.name();
         this.firstSurname = command.firstSurname();
         this.lastSurname = command.lastSurname();
@@ -89,6 +91,14 @@ public class CaseFolderAggregate {
     public void handle(DeleteCaseFolderCommand command) {
         log.info("Deleting case folder aggregate {}", command.caseFolderId());
         AggregateLifecycle.markDeleted();
+    }
+
+    @CommandHandler
+    public void handle(CompleteCaseFolderCommand command) {
+        log.info("Completing case folder aggregate {}", command.caseFolderId());
+        this.status = CaseFolderStatus.ACTIVE;
+        this.updatedAt = LocalDateTime.now();
+        AggregateLifecycle.apply(new CaseFolderCompletedEvent(this.id));
     }
 
     public CaseFolderAggregate normalize() {

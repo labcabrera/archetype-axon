@@ -79,7 +79,8 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
                 if (aggregate.isDeleted()) {
                     log.debug("Deleting aggregate: {}", aggregateIdentifier);
                     caseFolderRepository.deleteById(aggregateIdentifier);
-                } else {
+                }
+                else {
                     log.debug("Updating aggregate: {}", aggregateIdentifier);
                     aggregate.invoke(caseFolderRepository::update);
                 }

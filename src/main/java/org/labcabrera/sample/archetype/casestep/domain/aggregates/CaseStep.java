@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.axonframework.commandhandling.CommandHandler;
-import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.commands.CreateInitialCaseStepCommand;
 import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepStatus;
 import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepType;
-import org.springframework.cglib.core.Local;
+import org.labcabrera.sample.archetype.casestep.domain.events.CaseStepCreatedEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CaseStep {
 
+    @AggregateIdentifier
     private String id;
 
     private String caseFolderId;
@@ -43,15 +44,19 @@ public class CaseStep {
     private LocalDateTime updatedAt;
 
     @CommandHandler
-    public CaseStep(CreateInitialCaseStepCommand event) {
-        log.debug("Creating case step from case folder created event {}", event);
+    public CaseStep(CreateInitialCaseStepCommand command) {
+        log.debug("Creating case step for case folder {}", command.caseFolderId());
         this.id = UUID.randomUUID().toString();
-        this.caseFolderId = event.caseFolderId();
+        this.caseFolderId = command.caseFolderId();
         this.stepType = StepType.INITIAL_REVIEW;
         this.status = StepStatus.IN_PROGRESS;
-        this.assignedTo = event.owner();
-        this.owner = event.owner();
+        this.assignedTo = command.owner();
+        this.owner = command.owner();
         this.createdAt = LocalDateTime.now();
+
+        AggregateLifecycle.apply(new CaseStepCreatedEvent(
+            this.id,
+            this.caseFolderId));
     }
 
 }
