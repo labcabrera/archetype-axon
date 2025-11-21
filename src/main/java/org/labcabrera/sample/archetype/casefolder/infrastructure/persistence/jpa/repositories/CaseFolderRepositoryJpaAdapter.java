@@ -72,7 +72,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Transactional
     @CachePut(value = "caseFolder", key = "#result.id")
     public CaseFolderAggregate save(CaseFolderAggregate caseFolder) {
-        log.debug("Saving case folder {}", caseFolder.getId());
+        log.debug("[REPOSITORY] Saving case folder {}", caseFolder.getId());
         try {
             if (caseFolder.getId() != null && jpaRepository.existsById(caseFolder.getId())) {
                 throw new BadRequestException("case-folder.msg.err.already-exists", caseFolder.getId());
@@ -90,7 +90,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Transactional
     @CachePut(value = "caseFolder", key = "#caseFolder.id")
     public CaseFolderAggregate update(CaseFolderAggregate caseFolder) {
-        log.debug("Updating case folder {}", caseFolder.getId());
+        log.debug("[REPOSITORY] Updating case folder {}", caseFolder.getId());
         var current = jpaRepository.findById(caseFolder.getId())
             .orElseThrow(() -> new BadRequestException("Case folder not found with id " + caseFolder.getId()));
         // boolean modified = caseFolderMerger.mergeChanges(current, caseFolder);
@@ -105,6 +105,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Override
     @CachePut(value = "caseFolder", key = "#caseFolderId")
     public CaseFolderAggregate updateStatus(String caseFolderId, CaseFolderStatus status) {
+        log.debug("[REPOSITORY] Updating case folder {} status {}", caseFolderId, status);
         jpaRepository.updateStatus(caseFolderId, status);
         var updatedEntity = jpaRepository.findById(caseFolderId)
             .orElseThrow(() -> new BadRequestException("Case folder not found with id " + caseFolderId));
@@ -115,7 +116,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Transactional
     @CacheEvict(value = "caseFolder", key = "#caseFolderId")
     public void deleteById(String caseFolderId) {
-        log.debug("Deleting case folder {}", caseFolderId);
+        log.debug("[REPOSITORY] Deleting case folder {}", caseFolderId);
         jpaRepository.deleteById(caseFolderId);
     }
 

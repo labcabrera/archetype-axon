@@ -17,9 +17,13 @@ TODO: copiado de version que usa spring cloud stream. Adaptar
 
 == Introducción
 
-Este proyecto es un prototipo que muestra una aplicación Java Spring Boot diseñada siguiendo principios de Clean Architecture (hexagonal / ports & adapters) y usando Spring Cloud Stream para integración con Kafka en un enfoque "vertical slices" (cada módulo contiene sus capas: domain, application, infrastructure e interfaces).
+Este proyecto es un prototipo que muestra una aplicación Java que usa Axon Framework para aplicar DDD sin *Event Sourcing* persitiendo los agregados a través de JPA. También aplica los principios
+de Clean Architecture y utiliza Spring Cloud Stream para la integración basada en eventos con Kafka.
 
-Pretende ser un punto de partida para microservicios que publican y consumen eventos, usando JPA para la persistencia, CQRS para la integración de commands y queries. El prototipo está pensado para equipos de desarrollo que no estén familiarizados con conceptos de DDD o event sourcing tales como link:https://www.axoniq.io/framework[Axon] o link:https://eventuate.io/abouteventuatetram.html[Eventuate Tram] y se enfoquen en la implementación de la lógica de  negocio.
+El prototipo está pensado para la creación de microservicios que gestionen entidades de negocio a través de eventos, implementando un enfoque CQRS básico y coreografía de Sagas entre módulos. Dentro
+de este enfoque se busca mantener el mismo sistema de persistencia que las aplicaciones tradicionales basadas en CRUD de modo que puedan evolucionar manteniendo el mismo modelo de datos relacional.
+
+Se ha utilizado un enfoque de arquitectura en "vertical slices" donde cada módulo contiene sus propias capas de dominio, aplicación, infraestructura e interfaces. Esto facilita la separación de responsabilidades y la escalabilidad del proyecto.
 
 El prototipo incluye también una configuración de seguridad basada en OAuth2 Resource Server. Las llamadas a la API requieren de un token previamente emitido por un proveedor de identidad que será validado por la aplicación a través de la configuración JWT del IAM.
 
