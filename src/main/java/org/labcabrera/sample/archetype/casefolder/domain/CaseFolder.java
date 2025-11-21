@@ -60,7 +60,7 @@ public class CaseFolder {
         this.lastSurname = command.lastSurname();
         this.idCard = new IdCard(command.idCardType(), command.idCardNumber());
         this.createdAt = LocalDateTime.now();
-        this.owner = command.owner();
+        this.owner = command.username();
         this.normalize();
         AggregateLifecycle.apply(new CaseFolderCreatedEvent(this));
     }

@@ -1,5 +1,7 @@
 package org.labcabrera.sample.archetype.casefolder.application.cqrs.commands;
 
+import java.util.Set;
+
 import org.labcabrera.sample.archetype.casefolder.domain.IdCardType;
 
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +18,9 @@ public record CreateCaseFolderCommand(
 
     @NotNull String idCardNumber,
 
-    @NotNull String owner
+    @NotNull String username,
+
+    @NotNull Set<String> roles
 
 ) {
 }

@@ -51,7 +51,12 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<PageResponse<CaseFolderDto>> getCaseFoldersByRsql(String rsql, Pageable pageable) {
-        var query = new GetCaseFoldersByRsqlQuery(rsql, pageable);
+        var user = securityPort.requireCurrentUser();
+        var query = new GetCaseFoldersByRsqlQuery(
+            rsql,
+            pageable,
+            user.username(),
+            user.roles());
         Page<CaseFolder> page = queryGateway.query(query, ResponseTypes.instanceOf(Page.class)).join();
         var pageDto = page.map(caseFolder -> mapper.toDto(caseFolder));
         var response = new PageResponse<>(pageDto);
@@ -67,7 +72,8 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             request.lastSurname(),
             request.idCard().type(),
             request.idCard().number(),
-            user.username());
+            user.username(),
+            user.roles());
         String caseFolderId = commandGateway.sendAndWait(command);
         return ResponseEntity.created(URI.create("/api/v1/case-folders/" + caseFolderId)).build();
     }
