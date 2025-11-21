@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.application.services.CaseFolderGuard;
 import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderPage;
 import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 import org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.entities.CaseFolderEntity;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort.AuthenticatedUser;
@@ -16,7 +17,6 @@ import org.labcabrera.sample.archetype.shared.domain.exceptions.BadRequestExcept
 import org.labcabrera.sample.archetype.shared.domain.exceptions.NotModifiedException;
 import org.labcabrera.sample.archetype.shared.infrastructure.persistence.rsql.CustomRsqlVisitor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
 
     private final CaseFolderJpaRepository jpaRepository;
@@ -45,7 +44,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     }
 
     @Override
-    public Page<CaseFolderAggregate> findByRsql(String rsql, Pageable pageable, AuthenticatedUser user) {
+    public CaseFolderPage findByRsql(String rsql, Pageable pageable, AuthenticatedUser user) {
         Specification<CaseFolderEntity> authSpec = (root, query, cb) -> {
             if (!user.hasRole(CaseFolderGuard.ROLE_CASE_FOLDER_MANAGEMENT)) {
                 return cb.equal(root.get("owner"), user.username());
@@ -54,14 +53,14 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
         };
         if (StringUtils.isBlank(rsql)) {
             var page = jpaRepository.findAll(authSpec, pageable);
-            return page.map(entity -> mapper.toDomain(entity));
+            return new CaseFolderPage(page.map(entity -> mapper.toDomain(entity)).getContent());
         }
         try {
             Node rootNode = rsqlParser.parse(rsql);
             Specification<CaseFolderEntity> spec = rootNode.accept(new CustomRsqlVisitor<CaseFolderEntity>());
             Specification<CaseFolderEntity> finalSpec = (spec == null) ? authSpec : spec.and(authSpec);
             var page = jpaRepository.findAll(finalSpec, pageable);
-            return page.map(entity -> mapper.toDomain(entity));
+            return new CaseFolderPage(page.map(entity -> mapper.toDomain(entity)).getContent());
         }
         catch (Exception ex) {
             throw new BadRequestException("rsql.msg.err.parse", ex, rsql);

@@ -3,7 +3,6 @@ package org.labcabrera.sample.archetype.casefolder.interfaces.http;
 import java.net.URI;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.DeleteCaseFolderCommand;
@@ -11,11 +10,11 @@ import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.Upda
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.queries.GetCaseFolderByIdQuery;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.queries.GetCaseFoldersByRsqlQuery;
 import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderPage;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CreateCaseFolderRequest;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CaseFolderDto;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.UpdateCaseFolderRequest;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
-import org.labcabrera.sample.archetype.shared.interfaces.http.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings("null")
 public class CaseFolderController implements CaseFolderControllerDefinition {
 
     private final CommandGateway commandGateway;
@@ -62,18 +60,16 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public ResponseEntity<PageResponse<CaseFolderDto>> getCaseFoldersByRsql(String rsql, Pageable pageable) {
+    public ResponseEntity<Page<CaseFolderDto>> getCaseFoldersByRsql(String rsql, Pageable pageable) {
         var user = securityPort.requireCurrentUser();
         var query = new GetCaseFoldersByRsqlQuery(
             rsql,
             pageable,
             user.username(),
             user.roles());
-        Page<CaseFolderAggregate> page = queryGateway.query(query, ResponseTypes.instanceOf(Page.class)).join();
-        var pageDto = page.map(caseFolder -> mapper.toDto(caseFolder));
-        var response = new PageResponse<>(pageDto);
-        return ResponseEntity.ok(response);
+        CaseFolderPage page = queryGateway.query(query, CaseFolderPage.class).join();
+        Page<CaseFolderDto> pageDto = page.map(caseFolder -> mapper.toDto(caseFolder));
+        return ResponseEntity.ok(pageDto);
     }
 
     @Override

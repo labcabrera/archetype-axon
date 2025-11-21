@@ -1,8 +1,6 @@
 package org.labcabrera.sample.archetype.casefolder.domain.events;
 
-public record CaseFolderUpdatedEvent(
-    String id,
-    String name,
-    String firstSurname,
-    String secondSurname) {
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
+
+public record CaseFolderUpdatedEvent(CaseFolderAggregate caseFolder) {
 }

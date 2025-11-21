@@ -6,10 +6,10 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 @EnableCaching
-public class SampleArchetypeCloudStream {
+public class SampleArchetypeAxon {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleArchetypeCloudStream.class, args);
+		SpringApplication.run(SampleArchetypeAxon.class, args);
 	}
 
 }

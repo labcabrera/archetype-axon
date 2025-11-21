@@ -8,7 +8,9 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
+import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
+import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdatedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCard;
 
@@ -65,6 +67,16 @@ public class CaseFolderAggregate {
         this.owner = command.username();
         this.normalize();
         AggregateLifecycle.apply(new CaseFolderCreatedEvent(this));
+    }
+
+    @CommandHandler
+    public CaseFolderAggregate(UpdateCaseFolderCommand command) {
+        this.name = command.name();
+        this.firstSurname = command.firstSurname();
+        this.lastSurname = command.lastSurname();
+        this.updatedAt = LocalDateTime.now();
+        this.normalize();
+        AggregateLifecycle.apply(new CaseFolderUpdatedEvent(this));
     }
 
     public CaseFolderAggregate normalize() {

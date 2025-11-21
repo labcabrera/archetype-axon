@@ -14,6 +14,7 @@ import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CaseFolder
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.UpdateCaseFolderRequest;
 import org.labcabrera.sample.archetype.shared.interfaces.http.PageResponse;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,7 +45,7 @@ public interface CaseFolderControllerDefinition {
         @ApiResponse(responseCode = "200", description = "Case folders list retrieved successfully", content = @Content(schema = @Schema(implementation = PageResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid RSQL expression", content = @Content(schema = @Schema(implementation = ApiError.class))),
     })
-    ResponseEntity<PageResponse<CaseFolderDto>> getCaseFoldersByRsql(
+    ResponseEntity<Page<CaseFolderDto>> getCaseFoldersByRsql(
         @Parameter(description = "RSQL expression to filter case folders", name = "q", required = false) @RequestParam(required = false, name = "q") String rsql,
         @ParameterObject Pageable pageable);
 
