@@ -24,7 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Aggregate
+@Aggregate(repository = "caseFolderAggregateRepository")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -60,8 +60,9 @@ public class CaseFolderAggregate {
 
     @CommandHandler
     public CaseFolderAggregate(CreateCaseFolderCommand command) {
-        log.info("Creating case folder aggregate {}", command.idCardNumber());
-        this.id = UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString();
+        log.info("Creating case folder aggregate id (idCard: {})", id, command.idCardNumber());
+        this.id = id;
         this.status = CaseFolderStatus.PARTIALLY_CREATED;
         this.name = command.name();
         this.firstSurname = command.firstSurname();

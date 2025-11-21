@@ -5,7 +5,7 @@ import java.util.List;
 import org.axonframework.queryhandling.QueryHandler;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.queries.GetCaseStepsByCaseFolderIdQuery;
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
-import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStepAggregate;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class GetCaseStepsByCaseFolderIdQueryHandler {
     private final SecurityPort securityPort;
 
     @QueryHandler
-    public List<CaseStep> handle(GetCaseStepsByCaseFolderIdQuery query) {
+    public List<CaseStepAggregate> handle(GetCaseStepsByCaseFolderIdQuery query) {
         var user = securityPort.requireCurrentUser();
         log.debug("Getting case steps for case folder {} (user={})", query.caseFolderId(), user.username());
         var caseSteps = caseStepRepository.findByCaseFolderId(query.caseFolderId());

@@ -1,9 +1,13 @@
 package org.labcabrera.sample.archetype.shared.infrastructure.configuration;
 
+import java.util.Map;
+
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventMessage;
+import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCompletedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdatedEvent;
+import org.labcabrera.sample.archetype.casestep.domain.events.CaseStepCreatedEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +34,13 @@ public class KafkaEventPublisherConfiguration {
 
     @RequiredArgsConstructor
     public static class CustomKafkaEventPublisher {
+
+        private Map<Class<?>, String> eventTopicMap = Map.of(
+            CaseFolderCreatedEvent.class, "sample-axon.case-folders.created.v1",
+            CaseFolderUpdatedEvent.class, "sample-axon.case-folders.updated.v1",
+            CaseFolderCompletedEvent.class, "sample-axon.case-folders.completed.v1",
+            CaseStepCreatedEvent.class, "sample-axon.case-steps.created.v1");
+
         private final KafkaTemplate<String, Object> kafkaTemplate;
 
         public void publish(EventMessage<?> eventMessage) {
@@ -41,11 +52,8 @@ public class KafkaEventPublisherConfiguration {
         }
 
         private String routeEventToTopic(Object payload) {
-            if (payload instanceof CaseFolderCreatedEvent) {
-                return "sample-axon.case-folders.created.v1";
-            }
-            else if (payload instanceof CaseFolderUpdatedEvent) {
-                return "sample-axon.case-folders.updated.v1";
+            if (eventTopicMap.containsKey(payload.getClass())) {
+                return eventTopicMap.get(payload.getClass());
             }
             return "sample-axon.axon-events";
         }

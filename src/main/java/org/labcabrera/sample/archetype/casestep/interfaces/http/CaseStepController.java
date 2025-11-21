@@ -5,7 +5,7 @@ import java.util.List;
 import org.axonframework.queryhandling.QueryGateway;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.queries.GetCaseStepByIdQuery;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.queries.GetCaseStepsByCaseFolderIdQuery;
-import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStepAggregate;
 import org.labcabrera.sample.archetype.casestep.interfaces.http.dto.CaseStepDto;
 import org.labcabrera.sample.archetype.casestep.interfaces.http.mappers.CaseStepDtoMapper;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class CaseStepController implements CaseStepControllerDefinition {
     @Override
     public ResponseEntity<CaseStepDto> getCaseStepById(String caseStepId) {
         var query = new GetCaseStepByIdQuery(caseStepId);
-        CaseStep caseStep = queryBus.query(query, CaseStep.class).join();
+        CaseStepAggregate caseStep = queryBus.query(query, CaseStepAggregate.class).join();
         var dto = mapper.toDto(caseStep);
         return ResponseEntity.ok(dto);
     }
@@ -34,7 +34,7 @@ public class CaseStepController implements CaseStepControllerDefinition {
     @SuppressWarnings("unchecked")
     public ResponseEntity<List<CaseStepDto>> getCaseStepsByCaseFolderId(String caseFolderId) {
         var query = new GetCaseStepsByCaseFolderIdQuery(caseFolderId);
-        List<CaseStep> caseSteps = queryBus.query(query, List.class).join();
+        List<CaseStepAggregate> caseSteps = queryBus.query(query, List.class).join();
         var dtos = caseSteps.stream().map(step -> mapper.toDto(step)).toList();
         return ResponseEntity.ok(dtos);
     }

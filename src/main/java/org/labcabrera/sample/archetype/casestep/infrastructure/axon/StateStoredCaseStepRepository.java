@@ -15,30 +15,31 @@ import org.axonframework.modelling.command.inspection.AggregateModel;
 import org.axonframework.modelling.command.inspection.AnnotatedAggregate;
 import org.axonframework.modelling.command.inspection.AnnotatedAggregateMetaModelFactory;
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
-import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStepAggregate;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class StateStoredCaseStepRepository implements Repository<CaseStep> {
+public class StateStoredCaseStepRepository implements Repository<CaseStepAggregate> {
 
     private final CaseStepRepository caseStepRepository;
     private final LockFactory lockFactory;
     private final EventBus eventBus;
-    private final AggregateModel<CaseStep> aggregateModel;
+    private final AggregateModel<CaseStepAggregate> aggregateModel;
 
     public StateStoredCaseStepRepository(CaseStepRepository caseStepRepository, LockFactory lockFactory, EventBus eventBus) {
         this.caseStepRepository = caseStepRepository;
         this.lockFactory = lockFactory;
         this.eventBus = eventBus;
-        this.aggregateModel = AnnotatedAggregateMetaModelFactory.inspectAggregate(CaseStep.class);
+        this.aggregateModel = AnnotatedAggregateMetaModelFactory.inspectAggregate(CaseStepAggregate.class);
     }
 
     @Override
-    public Aggregate<CaseStep> newInstance(@Nonnull java.util.concurrent.Callable<CaseStep> factoryMethod) throws Exception {
+    public Aggregate<CaseStepAggregate> newInstance(@Nonnull java.util.concurrent.Callable<CaseStepAggregate> factoryMethod)
+        throws Exception {
         Lock lock = null;
         try {
-            AnnotatedAggregate<CaseStep> aggregate = AnnotatedAggregate.initialize(
+            AnnotatedAggregate<CaseStepAggregate> aggregate = AnnotatedAggregate.initialize(
                 factoryMethod, aggregateModel, eventBus);
 
             String aggregateIdentifier = aggregate.identifier().toString();
@@ -59,21 +60,21 @@ public class StateStoredCaseStepRepository implements Repository<CaseStep> {
     }
 
     @Override
-    public Aggregate<CaseStep> load(@Nonnull String aggregateIdentifier, @Nullable Long expectedVersion) {
+    public Aggregate<CaseStepAggregate> load(@Nonnull String aggregateIdentifier, @Nullable Long expectedVersion) {
         log.debug("Loading case step aggregate with expected version: {}", aggregateIdentifier);
         return load(aggregateIdentifier);
     }
 
     @Override
-    public Aggregate<CaseStep> load(@Nonnull String aggregateIdentifier) {
+    public Aggregate<CaseStepAggregate> load(@Nonnull String aggregateIdentifier) {
         Lock lock = null;
         try {
             lock = lockFactory.obtainLock(aggregateIdentifier);
 
             log.debug("Loading case step aggregate: {}", aggregateIdentifier);
-            CaseStep root = caseStepRepository.findById(aggregateIdentifier)
+            CaseStepAggregate root = caseStepRepository.findById(aggregateIdentifier)
                 .orElseThrow(() -> new AggregateNotFoundException(aggregateIdentifier, "CaseStep aggregate not found"));
-            AnnotatedAggregate<CaseStep> aggregate = AnnotatedAggregate.initialize(root, aggregateModel, eventBus);
+            AnnotatedAggregate<CaseStepAggregate> aggregate = AnnotatedAggregate.initialize(root, aggregateModel, eventBus);
             CurrentUnitOfWork.get().onPrepareCommit(uow -> {
                 if (aggregate.isDeleted()) {
                     log.debug("Deleting case step aggregate: {}", aggregateIdentifier);
@@ -104,8 +105,8 @@ public class StateStoredCaseStepRepository implements Repository<CaseStep> {
     }
 
     @Override
-    public Aggregate<CaseStep> loadOrCreate(@Nonnull String aggregateIdentifier,
-        @Nonnull java.util.concurrent.Callable<CaseStep> factoryMethod)
+    public Aggregate<CaseStepAggregate> loadOrCreate(@Nonnull String aggregateIdentifier,
+        @Nonnull java.util.concurrent.Callable<CaseStepAggregate> factoryMethod)
         throws Exception {
         try {
             return load(aggregateIdentifier);

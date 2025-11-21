@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
-import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStepAggregate;
 import org.labcabrera.sample.archetype.casestep.infrastructure.persistence.jpa.mappers.CaseStepMapper;
 import org.labcabrera.sample.archetype.shared.domain.exceptions.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,19 +22,19 @@ public class CaseStepRepositoryJpaAdapter implements CaseStepRepository {
     private final CaseStepMapper mapper;
 
     @Override
-    public Optional<CaseStep> findById(String caseStepId) {
+    public Optional<CaseStepAggregate> findById(String caseStepId) {
         return jpaRepository.findById(caseStepId).map(entity -> mapper.toDomain(entity));
     }
 
     @Override
-    public List<CaseStep> findByCaseFolderId(String caseFolderId) {
+    public List<CaseStepAggregate> findByCaseFolderId(String caseFolderId) {
         var list = jpaRepository.findByCaseFolderId(caseFolderId);
         return list.stream().map(entity -> mapper.toDomain(entity)).toList();
     }
 
     @Override
     @Transactional
-    public CaseStep save(CaseStep caseStep) {
+    public CaseStepAggregate save(CaseStepAggregate caseStep) {
         try {
             if (caseStep.getId() != null && jpaRepository.existsById(caseStep.getId())) {
                 throw new BadRequestException("case-step.msg.err.already-exists", caseStep.getId());

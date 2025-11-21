@@ -8,7 +8,7 @@ import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRe
 import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.commands.CreateInitialCaseStepCommand;
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
-import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStepAggregate;
 import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepStatus;
 import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepType;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
@@ -28,7 +28,7 @@ public class CreateInitialCaseStepCommandHandler {
     private final SecurityPort securityPort;
 
     @EventHandler
-    public CaseStep handle(CreateInitialCaseStepCommand command) {
+    public CaseStepAggregate handle(CreateInitialCaseStepCommand command) {
         log.info("Creating initial case step for case folder {}", command.caseFolderId());
         var user = securityPort.requireCurrentUser();
         var caseFolder = caseFolderRepository.findById(command.caseFolderId())
@@ -39,8 +39,8 @@ public class CreateInitialCaseStepCommandHandler {
         return created;
     }
 
-    private CaseStep createInitialCaseStep(CaseFolderAggregate caseFolder) {
-        CaseStep caseStep = CaseStep.builder()
+    private CaseStepAggregate createInitialCaseStep(CaseFolderAggregate caseFolder) {
+        CaseStepAggregate caseStep = CaseStepAggregate.builder()
             .id(UUID.randomUUID().toString())
             .caseFolderId(caseFolder.getId())
             .stepType(StepType.INITIAL_REVIEW)

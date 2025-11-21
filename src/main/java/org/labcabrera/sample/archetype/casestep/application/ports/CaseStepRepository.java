@@ -3,16 +3,16 @@ package org.labcabrera.sample.archetype.casestep.application.ports;
 import java.util.List;
 import java.util.Optional;
 
-import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStepAggregate;
 
 public interface CaseStepRepository {
 
-    Optional<CaseStep> findById(String caseStep);
+    Optional<CaseStepAggregate> findById(String caseStep);
 
-    List<CaseStep> findByCaseFolderId(String caseFolderId);
+    List<CaseStepAggregate> findByCaseFolderId(String caseFolderId);
 
     void deleteByCaseFolderId(String caseFolderId);
 
-    CaseStep save(CaseStep entity);
+    CaseStepAggregate save(CaseStepAggregate entity);
 
 }

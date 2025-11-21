@@ -18,13 +18,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Aggregate
+@Aggregate(repository = "caseStepAggregateRepository")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Slf4j
-public class CaseStep {
+public class CaseStepAggregate {
 
     @AggregateIdentifier
     private String id;
@@ -44,7 +44,7 @@ public class CaseStep {
     private LocalDateTime updatedAt;
 
     @CommandHandler
-    public CaseStep(CreateInitialCaseStepCommand command) {
+    public CaseStepAggregate(CreateInitialCaseStepCommand command) {
         log.debug("Creating case step for case folder {}", command.caseFolderId());
         this.id = UUID.randomUUID().toString();
         this.caseFolderId = command.caseFolderId();
@@ -53,7 +53,6 @@ public class CaseStep {
         this.assignedTo = command.owner();
         this.owner = command.owner();
         this.createdAt = LocalDateTime.now();
-
         AggregateLifecycle.apply(new CaseStepCreatedEvent(
             this.id,
             this.caseFolderId));
