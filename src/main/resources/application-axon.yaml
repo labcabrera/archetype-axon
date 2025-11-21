@@ -1,0 +1,6 @@
+axon:
+  axonserver:
+    enabled: false
+  serializer:
+    events: jackson
+    messages: jackson
