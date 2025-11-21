@@ -47,7 +47,7 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
             String aggregateIdentifier = aggregate.identifier().toString();
             lock = lockFactory.obtainLock(aggregateIdentifier);
             CurrentUnitOfWork.get().onPrepareCommit(uow -> {
-                log.debug("Saving new aggregate: {}", aggregateIdentifier);
+                log.debug("Saving new case folder aggregate: {}", aggregateIdentifier);
                 aggregate.invoke(caseFolderRepository::save);
             });
             return aggregate;
@@ -71,17 +71,17 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
         try {
             lock = lockFactory.obtainLock(aggregateIdentifier);
 
-            log.debug("Loading aggregate: {}", aggregateIdentifier);
+            log.debug("Loading case folder aggregate: {}", aggregateIdentifier);
             CaseFolderAggregate root = caseFolderRepository.findById(aggregateIdentifier)
                 .orElseThrow(() -> new AggregateNotFoundException(aggregateIdentifier, "CaseFolder aggregate not found"));
             AnnotatedAggregate<CaseFolderAggregate> aggregate = AnnotatedAggregate.initialize(root, aggregateModel, eventBus);
             CurrentUnitOfWork.get().onPrepareCommit(uow -> {
                 if (aggregate.isDeleted()) {
-                    log.debug("Deleting aggregate: {}", aggregateIdentifier);
+                    log.debug("Deleting case folder aggregate: {}", aggregateIdentifier);
                     caseFolderRepository.deleteById(aggregateIdentifier);
                 }
                 else {
-                    log.debug("Updating aggregate: {}", aggregateIdentifier);
+                    log.debug("Updating case folder aggregate: {}", aggregateIdentifier);
                     aggregate.invoke(caseFolderRepository::update);
                 }
             });

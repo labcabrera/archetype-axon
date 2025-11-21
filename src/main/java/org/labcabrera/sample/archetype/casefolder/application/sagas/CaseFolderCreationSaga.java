@@ -27,7 +27,7 @@ public class CaseFolderCreationSaga {
         CreateInitialCaseStepCommand command = new CreateInitialCaseStepCommand(
             event.id(),
             event.owner());
-        log.debug("Sending command to create initial case step for case folder: {}", event.id());
+        log.debug("[SAGA] Sending command to create initial case step for case folder: {}", event.id());
         commandGateway.send(command);
     }
 
@@ -36,7 +36,7 @@ public class CaseFolderCreationSaga {
     public void handle(CaseStepCreatedEvent event) {
         log.info("[SAGA] Case step created successfully: {}. Completing case folder: {}", event.caseStepId(), event.caseFolderId());
         CompleteCaseFolderCommand command = new CompleteCaseFolderCommand(event.caseFolderId());
-        log.debug("Sending command to complete case folder: {}", event.caseFolderId());
+        log.debug("[SAGA] Sending command to complete case folder: {}", event.caseFolderId());
         commandGateway.send(command);
     }
 }

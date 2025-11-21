@@ -6,8 +6,6 @@ import org.springframework.messaging.Message;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
-import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
-import org.labcabrera.sample.archetype.casestep.domain.events.CaseStepCreatedEvent;
 import org.labcabrera.sample.archetype.shared.infrastructure.messaging.kafka.AuthenticatedConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,34 +20,18 @@ public class KafkaCaseFolderController extends AuthenticatedConsumer {
 
     private final CommandGateway commandBus;
 
-    // @Bean
-    // public Consumer<Message<CreateCaseFolderCommand>> onCaseFolderCreation() {
-    //     return command -> {
-    //         log.debug("Received case folder creation command: {}", command.getPayload().idCardNumber());
-    //         try {
-    //             loadUserContext(command);
-    //             commandBus.sendAndWait(command);
-    //         }
-    //         finally {
-    //             SecurityContextHolder.clearContext();
-    //         }
-    //     };
-    // }
+    @Bean
+    public Consumer<Message<CreateCaseFolderCommand>> onCaseFolderCreation() {
+        return command -> {
+            log.debug("Received case folder creation command: {}", command.getPayload().idCardNumber());
+            try {
+                loadUserContext(command);
+                commandBus.sendAndWait(command);
+            }
+            finally {
+                SecurityContextHolder.clearContext();
+            }
+        };
+    }
 
-    // @Bean
-    // public Consumer<Message<CaseStepCreatedEvent>> onCaseStepCreated() {
-    //     return event -> {
-    //         log.debug("Received case step created event: {}", event.getPayload().caseFolderId());
-    //         try {
-    //             loadUserContext(event);
-    //             var command = new UpdateCaseFolderStatusCommand(
-    //                 event.getPayload().caseFolderId(),
-    //                 CaseFolderStatus.ACTIVE);
-    //             commandBus.sendAndWait(command);
-    //         }
-    //         finally {
-    //             SecurityContextHolder.clearContext();
-    //         }
-    //     };
-    // }
 }
