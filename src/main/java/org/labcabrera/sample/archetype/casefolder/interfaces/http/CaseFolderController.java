@@ -1,6 +1,7 @@
 package org.labcabrera.sample.archetype.casefolder.interfaces.http;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.DeleteCaseFolderCommand;
@@ -28,16 +29,17 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("null")
 public class CaseFolderController implements CaseFolderControllerDefinition {
 
-    private final CommandGateway commandBus;
-    private final QueryGateway queryBus;
+    private final CommandGateway commandGateway;
+    private final QueryGateway queryGateway;
     private final CaseFolderDtoMapper mapper;
 
     @Override
     public ResponseEntity<CaseFolderDto> getCaseFolderById(@PathVariable String caseFolderId) {
         var query = new GetCaseFolderByIdQuery(caseFolderId);
-        CaseFolder caseFolder = queryBus.query(query, CaseFolder.class).join();
+        CaseFolder caseFolder = queryGateway.query(query, CaseFolder.class).join();
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.ok(caseFolderDto);
     }
@@ -46,7 +48,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     @SuppressWarnings("unchecked")
     public ResponseEntity<PageResponse<CaseFolderDto>> getCaseFoldersByRsql(String rsql, Pageable pageable) {
         var query = new GetCaseFoldersByRsqlQuery(rsql, pageable);
-        Page<CaseFolder> page = queryBus.query(query, Page.class).join();
+        Page<CaseFolder> page = queryGateway.query(query, ResponseTypes.instanceOf(Page.class)).join();
         var pageDto = page.map(caseFolder -> mapper.toDto(caseFolder));
         var response = new PageResponse<>(pageDto);
         return ResponseEntity.ok(response);
@@ -60,7 +62,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             request.lastSurname(),
             request.idCard().type(),
             request.idCard().number());
-        CaseFolder caseFolder = commandBus.sendAndWait(command);
+        CaseFolder caseFolder = commandGateway.sendAndWait(command);
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.status(201).body(caseFolderDto);
     }
@@ -72,7 +74,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             request.name(),
             request.firstSurname(),
             request.lastSurname());
-        CaseFolder caseFolder = commandBus.sendAndWait(command);
+        CaseFolder caseFolder = commandGateway.sendAndWait(command);
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.ok(caseFolderDto);
     }
@@ -80,7 +82,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     @Override
     public ResponseEntity<Void> delete(String caseFolderId) {
         var command = new DeleteCaseFolderCommand(caseFolderId);
-        commandBus.sendAndWait(command);
+        commandGateway.sendAndWait(command);
         return ResponseEntity.noContent().build();
     }
 

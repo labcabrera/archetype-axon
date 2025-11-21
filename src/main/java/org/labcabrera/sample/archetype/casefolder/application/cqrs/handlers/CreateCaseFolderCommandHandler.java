@@ -1,6 +1,6 @@
 package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 
-import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.commandhandling.CommandHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderEventBusPort;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
@@ -39,7 +39,7 @@ public class CreateCaseFolderCommandHandler {
             .register(meterRegistry);
     }
 
-    @EventHandler
+    @CommandHandler
     public CaseFolder on(CreateCaseFolderCommand command) {
         var user = securityPort.requireCurrentUser();
         log.info("Create case folder << {} (user: {})", command.idCardNumber(), user.username());

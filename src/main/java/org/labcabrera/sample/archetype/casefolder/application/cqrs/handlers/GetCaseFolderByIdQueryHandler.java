@@ -1,5 +1,6 @@
 package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 
+import org.axonframework.queryhandling.QueryHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.queries.GetCaseFolderByIdQuery;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
@@ -19,7 +20,7 @@ public class GetCaseFolderByIdQueryHandler {
     private final SecurityPort securityPort;
     private final Guard<CaseFolder> caseFolderGuard;
 
-    @QuertyHandler
+    @QueryHandler
     public CaseFolder handle(GetCaseFolderByIdQuery query) {
         var user = securityPort.requireCurrentUser();
         log.debug("Getting case folder {} (user: {})", query.caseFolderId(), user.username());
