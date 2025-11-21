@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.axonframework.eventhandling.EventHandler;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.commands.CreateInitialCaseStepCommand;
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
 import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
@@ -39,7 +39,7 @@ public class CreateInitialCaseStepCommandHandler {
         return created;
     }
 
-    private CaseStep createInitialCaseStep(CaseFolder caseFolder) {
+    private CaseStep createInitialCaseStep(CaseFolderAggregate caseFolder) {
         CaseStep caseStep = CaseStep.builder()
             .id(UUID.randomUUID().toString())
             .caseFolderId(caseFolder.getId())

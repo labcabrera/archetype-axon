@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolderStatus;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

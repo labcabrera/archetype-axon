@@ -8,8 +8,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.apache.commons.lang3.StringUtils;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
 import org.labcabrera.sample.archetype.casefolder.application.services.CaseFolderGuard;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolderStatus;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 import org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.entities.CaseFolderEntity;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort.AuthenticatedUser;
 import org.labcabrera.sample.archetype.shared.domain.exceptions.BadRequestException;
@@ -40,12 +40,12 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
 
     @Override
     @Cacheable(value = "caseFolder", key = "#caseFolderId", unless = "#result == null || #result.isEmpty()")
-    public Optional<CaseFolder> findById(String caseFolderId) {
+    public Optional<CaseFolderAggregate> findById(String caseFolderId) {
         return jpaRepository.findById(caseFolderId).map(entity -> mapper.toDomain(entity));
     }
 
     @Override
-    public Page<CaseFolder> findByRsql(String rsql, Pageable pageable, AuthenticatedUser user) {
+    public Page<CaseFolderAggregate> findByRsql(String rsql, Pageable pageable, AuthenticatedUser user) {
         Specification<CaseFolderEntity> authSpec = (root, query, cb) -> {
             if (!user.hasRole(CaseFolderGuard.ROLE_CASE_FOLDER_MANAGEMENT)) {
                 return cb.equal(root.get("owner"), user.username());
@@ -71,7 +71,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Override
     @Transactional
     @CachePut(value = "caseFolder", key = "#result.id")
-    public CaseFolder save(CaseFolder caseFolder) {
+    public CaseFolderAggregate save(CaseFolderAggregate caseFolder) {
         try {
             if (caseFolder.getId() != null && jpaRepository.existsById(caseFolder.getId())) {
                 throw new BadRequestException("case-folder.msg.err.already-exists", caseFolder.getId());
@@ -88,7 +88,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Override
     @Transactional
     @CachePut(value = "caseFolder", key = "#caseFolder.id")
-    public CaseFolder update(CaseFolder caseFolder) {
+    public CaseFolderAggregate update(CaseFolderAggregate caseFolder) {
         var current = jpaRepository.findById(caseFolder.getId())
             .orElseThrow(() -> new BadRequestException("Case folder not found with id " + caseFolder.getId()));
         boolean modified = caseFolderMerger.mergeChanges(current, caseFolder);
@@ -101,7 +101,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
 
     @Override
     @CachePut(value = "caseFolder", key = "#caseFolderId")
-    public CaseFolder updateStatus(String caseFolderId, CaseFolderStatus status) {
+    public CaseFolderAggregate updateStatus(String caseFolderId, CaseFolderStatus status) {
         jpaRepository.updateStatus(caseFolderId, status);
         var updatedEntity = jpaRepository.findById(caseFolderId)
             .orElseThrow(() -> new BadRequestException("Case folder not found with id " + caseFolderId));

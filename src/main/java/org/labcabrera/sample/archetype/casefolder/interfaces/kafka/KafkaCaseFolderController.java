@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderStatusCommand;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolderStatus;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 import org.labcabrera.sample.archetype.casestep.domain.events.CaseStepCreatedEvent;
 import org.labcabrera.sample.archetype.shared.infrastructure.messaging.kafka.AuthenticatedConsumer;
 import org.springframework.context.annotation.Bean;

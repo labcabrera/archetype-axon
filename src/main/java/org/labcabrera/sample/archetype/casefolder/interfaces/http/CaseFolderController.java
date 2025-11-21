@@ -10,7 +10,7 @@ import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.Dele
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.queries.GetCaseFolderByIdQuery;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.queries.GetCaseFoldersByRsqlQuery;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CreateCaseFolderRequest;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CaseFolderDto;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.UpdateCaseFolderRequest;
@@ -23,6 +23,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.mappers.CaseFolderDtoMapper;
 
@@ -39,11 +43,20 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     private final QueryGateway queryGateway;
     private final CaseFolderDtoMapper mapper;
     private final SecurityPort securityPort;
+    private final MeterRegistry meterRegistry;
+    private Counter caseFolderCreatedCounter;
+
+    @PostConstruct
+    private void initMetrics() {
+        caseFolderCreatedCounter = Counter.builder("casefoldercreated")
+            .description("Number of case folders created")
+            .register(meterRegistry);
+    }
 
     @Override
     public ResponseEntity<CaseFolderDto> getCaseFolderById(@PathVariable String caseFolderId) {
         var query = new GetCaseFolderByIdQuery(caseFolderId);
-        CaseFolder caseFolder = queryGateway.query(query, CaseFolder.class).join();
+        CaseFolderAggregate caseFolder = queryGateway.query(query, CaseFolderAggregate.class).join();
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.ok(caseFolderDto);
     }
@@ -57,7 +70,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             pageable,
             user.username(),
             user.roles());
-        Page<CaseFolder> page = queryGateway.query(query, ResponseTypes.instanceOf(Page.class)).join();
+        Page<CaseFolderAggregate> page = queryGateway.query(query, ResponseTypes.instanceOf(Page.class)).join();
         var pageDto = page.map(caseFolder -> mapper.toDto(caseFolder));
         var response = new PageResponse<>(pageDto);
         return ResponseEntity.ok(response);
@@ -75,6 +88,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             user.username(),
             user.roles());
         String caseFolderId = commandGateway.sendAndWait(command);
+        caseFolderCreatedCounter.increment();
         return ResponseEntity.created(URI.create("/api/v1/case-folders/" + caseFolderId)).build();
     }
 
@@ -85,7 +99,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
             request.name(),
             request.firstSurname(),
             request.lastSurname());
-        CaseFolder caseFolder = commandGateway.sendAndWait(command);
+        CaseFolderAggregate caseFolder = commandGateway.sendAndWait(command);
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.ok(caseFolderDto);
     }

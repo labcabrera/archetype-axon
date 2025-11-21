@@ -1,6 +1,6 @@
 package org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.entities;
 
-import org.labcabrera.sample.archetype.casefolder.domain.IdCardType;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCardType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

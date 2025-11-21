@@ -3,7 +3,7 @@ package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 import org.axonframework.queryhandling.QueryHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.queries.GetCaseFoldersByRsqlQuery;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ public class GetCaseFoldersByRsqlQueryHandler {
     private final SecurityPort securityPort;
 
     @QueryHandler
-    public Page<CaseFolder> handle(GetCaseFoldersByRsqlQuery query) {
+    public Page<CaseFolderAggregate> handle(GetCaseFoldersByRsqlQuery query) {
         var user = securityPort.requireCurrentUser();
         log.debug("Getting case folders by RSQL <<< {} (user: {})", query.rsql(), user.username());
         return caseFolderRepository.findByRsql(query.rsql(), query.pageable(), user);

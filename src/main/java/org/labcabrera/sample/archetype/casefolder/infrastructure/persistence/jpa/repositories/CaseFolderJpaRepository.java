@@ -1,6 +1,6 @@
 package org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.repositories;
 
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolderStatus;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 import org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.entities.CaseFolderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

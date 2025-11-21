@@ -1,19 +1,19 @@
 package org.labcabrera.sample.archetype.casefolder.application.services;
 
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.shared.application.Guard;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort.AuthenticatedUser;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CaseFolderGuard implements Guard<CaseFolder> {
+public class CaseFolderGuard implements Guard<CaseFolderAggregate> {
 
     public static final String ROLE_CASE_FOLDER_MANAGEMENT = "case-folder-management";
     public static final String ROLE_CASE_FOLDER_READ = "case-folder-read";
     public static final String ROLE_CASE_FOLDER_WRITE = "case-folder-write";
 
     @Override
-    public void checkRead(CaseFolder caseFolder, AuthenticatedUser user) {
+    public void checkRead(CaseFolderAggregate caseFolder, AuthenticatedUser user) {
         if (user.hasRole(ROLE_CASE_FOLDER_MANAGEMENT)) {
             return;
         }
@@ -26,7 +26,7 @@ public class CaseFolderGuard implements Guard<CaseFolder> {
     }
 
     @Override
-    public void checkWrite(CaseFolder caseFolder, AuthenticatedUser user) {
+    public void checkWrite(CaseFolderAggregate caseFolder, AuthenticatedUser user) {
         if (user.hasRole(ROLE_CASE_FOLDER_MANAGEMENT)) {
             return;
         }

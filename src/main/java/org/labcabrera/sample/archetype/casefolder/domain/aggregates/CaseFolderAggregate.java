@@ -1,4 +1,4 @@
-package org.labcabrera.sample.archetype.casefolder.domain;
+package org.labcabrera.sample.archetype.casefolder.domain.aggregates;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,6 +9,8 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCard;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Builder
 @Slf4j
-public class CaseFolder {
+public class CaseFolderAggregate {
 
     @AggregateIdentifier
     @NotNull
@@ -52,7 +54,7 @@ public class CaseFolder {
     private LocalDateTime updatedAt;
 
     @CommandHandler
-    public CaseFolder(CreateCaseFolderCommand command) {
+    public CaseFolderAggregate(CreateCaseFolderCommand command) {
         this.id = UUID.randomUUID().toString();
         this.status = CaseFolderStatus.ACTIVE;
         this.name = command.name();
@@ -65,7 +67,7 @@ public class CaseFolder {
         AggregateLifecycle.apply(new CaseFolderCreatedEvent(this));
     }
 
-    public CaseFolder normalize() {
+    public CaseFolderAggregate normalize() {
         name = name.toUpperCase();
         firstSurname = firstSurname.toUpperCase();
         if (lastSurname != null) {

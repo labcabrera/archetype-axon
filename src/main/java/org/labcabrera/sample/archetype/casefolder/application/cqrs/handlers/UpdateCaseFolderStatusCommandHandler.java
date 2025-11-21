@@ -3,7 +3,7 @@ package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 import org.axonframework.commandhandling.CommandHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderStatusCommand;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.shared.application.Guard;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
 import org.labcabrera.sample.archetype.shared.domain.exceptions.NotFoundException;
@@ -16,13 +16,13 @@ import lombok.RequiredArgsConstructor;
 public class UpdateCaseFolderStatusCommandHandler {
 
     private final CaseFolderRepository caseFolderRepository;
-    private final Guard<CaseFolder> caseFolderGuard;
+    private final Guard<CaseFolderAggregate> caseFolderGuard;
     private final SecurityPort securityPort;
 
     @CommandHandler
-    public CaseFolder handle(UpdateCaseFolderStatusCommand command) {
+    public CaseFolderAggregate handle(UpdateCaseFolderStatusCommand command) {
         var current = caseFolderRepository.findById(command.caseFolderId())
-            .orElseThrow(() -> new NotFoundException("case-folder.msg.not-found", command.caseFolderId(), CaseFolder.class));
+            .orElseThrow(() -> new NotFoundException("case-folder.msg.not-found", command.caseFolderId(), CaseFolderAggregate.class));
         var user = securityPort.requireCurrentUser();
         caseFolderGuard.checkWrite(current, user);
         var updated = caseFolderRepository.updateStatus(current.getId(), command.status());

@@ -3,7 +3,7 @@ package org.labcabrera.sample.archetype.casefolder.application.cqrs.handlers;
 import org.axonframework.commandhandling.CommandHandler;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
-import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdatedEvent;
 import org.labcabrera.sample.archetype.shared.application.Guard;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
@@ -20,15 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 public class UpdateCaseFolderCommandHandler {
 
     private final CaseFolderRepository caseFolderRepository;
-    private final Guard<CaseFolder> caseFolderGuard;
+    private final Guard<CaseFolderAggregate> caseFolderGuard;
     private final SecurityPort securityPort;
 
     @CommandHandler
-    public CaseFolder handle(UpdateCaseFolderCommand command) {
+    public CaseFolderAggregate handle(UpdateCaseFolderCommand command) {
         var user = securityPort.requireCurrentUser();
         log.info("Update case folder << {} (user: {})", command.caseFolderId(), user.username());
         var existing = caseFolderRepository.findById(command.caseFolderId())
-            .orElseThrow(() -> new NotFoundException("case-folder.msg.not-found", command.caseFolderId(), CaseFolder.class));
+            .orElseThrow(() -> new NotFoundException("case-folder.msg.not-found", command.caseFolderId(), CaseFolderAggregate.class));
         caseFolderGuard.checkWrite(existing, user);
         merge(existing, command);
         existing.normalize();
@@ -36,7 +36,7 @@ public class UpdateCaseFolderCommandHandler {
         return caseFolder;
     }
 
-    private void merge(CaseFolder existing, UpdateCaseFolderCommand command) {
+    private void merge(CaseFolderAggregate existing, UpdateCaseFolderCommand command) {
         boolean modified = false;
         if (command.name() != null && !command.name().toUpperCase().equals(existing.getName())) {
             existing.setName(command.name());

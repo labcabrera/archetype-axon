@@ -1,6 +1,6 @@
 package org.labcabrera.sample.archetype.casefolder.interfaces.http.dto;
 
-import org.labcabrera.sample.archetype.casefolder.domain.IdCardType;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCardType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;

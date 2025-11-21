@@ -2,7 +2,7 @@ package org.labcabrera.sample.archetype.casefolder.application.cqrs.commands;
 
 import java.util.Set;
 
-import org.labcabrera.sample.archetype.casefolder.domain.IdCardType;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCardType;
 
 import jakarta.validation.constraints.NotNull;
 
