@@ -1,6 +1,6 @@
 package org.labcabrera.sample.archetype.casestep.infrastructure.persistence.jpa.mappers;
 
-import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
 import org.labcabrera.sample.archetype.casestep.infrastructure.persistence.jpa.entities.CaseStepEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

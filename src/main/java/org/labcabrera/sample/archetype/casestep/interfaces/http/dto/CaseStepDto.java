@@ -1,7 +1,7 @@
 package org.labcabrera.sample.archetype.casestep.interfaces.http.dto;
 
-import org.labcabrera.sample.archetype.casestep.domain.StepStatus;
-import org.labcabrera.sample.archetype.casestep.domain.StepType;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepStatus;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;

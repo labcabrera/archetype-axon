@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.labcabrera.sample.archetype.casestep.domain.StepStatus;
-import org.labcabrera.sample.archetype.casestep.domain.StepType;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepStatus;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

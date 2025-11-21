@@ -4,10 +4,14 @@ import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAg
 import org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.entities.CaseFolderEntity;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class CaseFolderMerger {
 
     public boolean mergeChanges(CaseFolderEntity current, CaseFolderAggregate updated) {
+        log.debug("Merging changes in case folder {}", current.getId());
         boolean modified = false;
         if (!current.getName().equals(updated.getName())) {
             current.setName(updated.getName());

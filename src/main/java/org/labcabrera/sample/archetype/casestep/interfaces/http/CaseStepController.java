@@ -5,7 +5,7 @@ import java.util.List;
 import org.axonframework.queryhandling.QueryGateway;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.queries.GetCaseStepByIdQuery;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.queries.GetCaseStepsByCaseFolderIdQuery;
-import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
 import org.labcabrera.sample.archetype.casestep.interfaces.http.dto.CaseStepDto;
 import org.labcabrera.sample.archetype.casestep.interfaces.http.mappers.CaseStepDtoMapper;
 import org.springframework.http.ResponseEntity;

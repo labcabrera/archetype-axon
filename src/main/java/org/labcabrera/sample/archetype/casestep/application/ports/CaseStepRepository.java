@@ -3,7 +3,7 @@ package org.labcabrera.sample.archetype.casestep.application.ports;
 import java.util.List;
 import java.util.Optional;
 
-import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
 
 public interface CaseStepRepository {
 

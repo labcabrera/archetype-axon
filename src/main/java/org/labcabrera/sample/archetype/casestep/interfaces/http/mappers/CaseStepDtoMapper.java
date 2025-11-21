@@ -1,6 +1,6 @@
 package org.labcabrera.sample.archetype.casestep.interfaces.http.mappers;
 
-import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
 import org.labcabrera.sample.archetype.casestep.interfaces.http.dto.CaseStepDto;
 import org.mapstruct.Mapper;
 

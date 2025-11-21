@@ -76,8 +76,13 @@ public class StateStoredCaseFolderRepository implements Repository<CaseFolderAgg
                 .orElseThrow(() -> new AggregateNotFoundException(aggregateIdentifier, "CaseFolder aggregate not found"));
             AnnotatedAggregate<CaseFolderAggregate> aggregate = AnnotatedAggregate.initialize(root, aggregateModel, eventBus);
             CurrentUnitOfWork.get().onPrepareCommit(uow -> {
-                log.debug("Updating aggregate: {}", aggregateIdentifier);
-                aggregate.invoke(caseFolderRepository::update);
+                if (aggregate.isDeleted()) {
+                    log.debug("Deleting aggregate: {}", aggregateIdentifier);
+                    caseFolderRepository.deleteById(aggregateIdentifier);
+                } else {
+                    log.debug("Updating aggregate: {}", aggregateIdentifier);
+                    aggregate.invoke(caseFolderRepository::update);
+                }
             });
             return aggregate;
         }

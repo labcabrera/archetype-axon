@@ -1,4 +1,4 @@
-package org.labcabrera.sample.archetype.casestep.domain;
+package org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects;
 
 public enum StepType {
 

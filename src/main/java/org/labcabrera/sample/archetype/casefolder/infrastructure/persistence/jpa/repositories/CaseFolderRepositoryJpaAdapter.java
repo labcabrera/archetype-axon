@@ -14,7 +14,6 @@ import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolder
 import org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa.entities.CaseFolderEntity;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort.AuthenticatedUser;
 import org.labcabrera.sample.archetype.shared.domain.exceptions.BadRequestException;
-import org.labcabrera.sample.archetype.shared.domain.exceptions.NotModifiedException;
 import org.labcabrera.sample.archetype.shared.infrastructure.persistence.rsql.CustomRsqlVisitor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -26,10 +25,12 @@ import org.labcabrera.sample.archetype.casefolder.infrastructure.persistence.jpa
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
 
     private final CaseFolderJpaRepository jpaRepository;
@@ -71,6 +72,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Transactional
     @CachePut(value = "caseFolder", key = "#result.id")
     public CaseFolderAggregate save(CaseFolderAggregate caseFolder) {
+        log.debug("Saving case folder {}", caseFolder.getId());
         try {
             if (caseFolder.getId() != null && jpaRepository.existsById(caseFolder.getId())) {
                 throw new BadRequestException("case-folder.msg.err.already-exists", caseFolder.getId());
@@ -88,12 +90,14 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Transactional
     @CachePut(value = "caseFolder", key = "#caseFolder.id")
     public CaseFolderAggregate update(CaseFolderAggregate caseFolder) {
+        log.debug("Updating case folder {}", caseFolder.getId());
         var current = jpaRepository.findById(caseFolder.getId())
             .orElseThrow(() -> new BadRequestException("Case folder not found with id " + caseFolder.getId()));
-        boolean modified = caseFolderMerger.mergeChanges(current, caseFolder);
-        if (!modified) {
-            throw new NotModifiedException("case-folder.msg.err.not-modified", caseFolder.getId());
-        }
+        // boolean modified = caseFolderMerger.mergeChanges(current, caseFolder);
+        // if (!modified) {
+        //     throw new NotModifiedException("case-folder.msg.err.not-modified", caseFolder.getId());
+        // }
+        caseFolderMerger.mergeChanges(current, caseFolder);
         var savedEntity = jpaRepository.save(current);
         return mapper.toDomain(savedEntity);
     }
@@ -111,6 +115,7 @@ public class CaseFolderRepositoryJpaAdapter implements CaseFolderRepository {
     @Transactional
     @CacheEvict(value = "caseFolder", key = "#caseFolderId")
     public void deleteById(String caseFolderId) {
+        log.debug("Deleting case folder {}", caseFolderId);
         jpaRepository.deleteById(caseFolderId);
     }
 

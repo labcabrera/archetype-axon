@@ -8,9 +8,9 @@ import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRe
 import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
 import org.labcabrera.sample.archetype.casestep.application.cqrs.commands.CreateInitialCaseStepCommand;
 import org.labcabrera.sample.archetype.casestep.application.ports.CaseStepRepository;
-import org.labcabrera.sample.archetype.casestep.domain.CaseStep;
-import org.labcabrera.sample.archetype.casestep.domain.StepStatus;
-import org.labcabrera.sample.archetype.casestep.domain.StepType;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.CaseStep;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepStatus;
+import org.labcabrera.sample.archetype.casestep.domain.aggregates.valueobjects.StepType;
 import org.labcabrera.sample.archetype.shared.application.SecurityPort;
 import org.labcabrera.sample.archetype.shared.domain.exceptions.BadRequestException;
 import org.springframework.stereotype.Component;
