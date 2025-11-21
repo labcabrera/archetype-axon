@@ -2,6 +2,8 @@ package org.labcabrera.sample.archetype.shared.infrastructure.configuration;
 
 import org.axonframework.common.lock.LockFactory;
 import org.axonframework.common.lock.PessimisticLockFactory;
+import org.axonframework.deadline.DeadlineManager;
+import org.axonframework.deadline.SimpleDeadlineManager;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.modelling.command.Repository;
 import org.axonframework.serialization.Serializer;
@@ -40,6 +42,14 @@ public class AxonConfiguration {
         LockFactory lockFactory,
         EventBus eventBus) {
         return new StateStoredCaseStepRepository(caseStepRepository, lockFactory, eventBus);
+    }
+
+    @Bean
+    @SuppressWarnings("null")
+    public DeadlineManager deadlineManager(org.axonframework.config.Configuration configuration) {
+        return SimpleDeadlineManager.builder()
+            .scopeAwareProvider(configuration.scopeAwareProvider())
+            .build();
     }
 
     @Bean
