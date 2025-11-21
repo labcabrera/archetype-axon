@@ -8,6 +8,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.CreateCaseFolderCommand;
+import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.DeleteCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.application.cqrs.commands.UpdateCaseFolderCommand;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderCreatedEvent;
 import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdatedEvent;
@@ -67,7 +68,8 @@ public class CaseFolderAggregate {
         this.createdAt = LocalDateTime.now();
         this.owner = command.username();
         this.normalize();
-        AggregateLifecycle.apply(new CaseFolderCreatedEvent(this.id, this.status, this.name,
+        AggregateLifecycle.apply(new CaseFolderCreatedEvent(
+            this.id, this.status, this.name,
             this.firstSurname, this.lastSurname, this.idCard, this.owner, this.createdAt));
     }
 
@@ -81,6 +83,12 @@ public class CaseFolderAggregate {
         this.normalize();
         AggregateLifecycle.apply(new CaseFolderUpdatedEvent(this.id, this.name,
             this.firstSurname, this.lastSurname, this.updatedAt));
+    }
+
+    @CommandHandler
+    public void handle(DeleteCaseFolderCommand command) {
+        log.info("Deleting case folder aggregate {}", command.caseFolderId());
+        AggregateLifecycle.markDeleted();
     }
 
     public CaseFolderAggregate normalize() {

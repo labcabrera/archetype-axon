@@ -53,7 +53,9 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
 
     @Override
     public ResponseEntity<CaseFolderDto> getCaseFolderById(@PathVariable String caseFolderId) {
+        var user = securityPort.requireCurrentUser();
         var query = new GetCaseFolderByIdQuery(caseFolderId);
+        log.debug("Find case folder by id: {} (user: {})", caseFolderId, user.username());
         CaseFolderAggregate caseFolder = queryGateway.query(query, CaseFolderAggregate.class).join();
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.ok(caseFolderDto);
@@ -62,6 +64,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     @Override
     public ResponseEntity<Page<CaseFolderDto>> getCaseFoldersByRsql(String rsql, Pageable pageable) {
         var user = securityPort.requireCurrentUser();
+        log.debug("Find case folder by rsql: {} (user: {})", rsql, user.username());
         var query = new GetCaseFoldersByRsqlQuery(
             rsql,
             pageable,
@@ -75,6 +78,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     @Override
     public ResponseEntity<Void> create(@RequestBody @Validated CreateCaseFolderRequest request) {
         var user = securityPort.requireCurrentUser();
+        log.debug("Create case folder {} (user: {})", request.idCard().number(), user.username());
         var command = new CreateCaseFolderCommand(
             request.name(),
             request.firstSurname(),
@@ -90,6 +94,8 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
 
     @Override
     public ResponseEntity<CaseFolderDto> update(String caseFolderId, UpdateCaseFolderRequest request) {
+        var user = securityPort.requireCurrentUser();
+        log.debug("Update case folder {} (user: {})", caseFolderId, user.username());
         var command = new UpdateCaseFolderCommand(
             caseFolderId,
             request.name(),
@@ -102,7 +108,12 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
 
     @Override
     public ResponseEntity<Void> delete(String caseFolderId) {
-        var command = new DeleteCaseFolderCommand(caseFolderId);
+        var user = securityPort.requireCurrentUser();
+        log.debug("Delete case folder {} (user: {})", caseFolderId, user.username());
+        var command = new DeleteCaseFolderCommand(
+            caseFolderId,
+            user.username(),
+            user.roles());
         commandGateway.sendAndWait(command);
         return ResponseEntity.noContent().build();
     }

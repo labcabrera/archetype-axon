@@ -22,15 +22,15 @@ public class DeleteCaseFolderCommandHandler {
     private final Guard<CaseFolderAggregate> caseFolderGuard;
     private final SecurityPort securityPort;
 
-    @CommandHandler
-    public Void handle(DeleteCaseFolderCommand command) {
-        var user = securityPort.requireCurrentUser();
-        log.debug("Deleting case folder {} (user: {})", command.caseFolderId(), user.username());
-        var caseFolder = caseFolderRepository.findById(command.caseFolderId())
-            .orElseThrow(() -> new NotFoundException("case-folder.msg.not-found", command.caseFolderId(), CaseFolderAggregate.class));
-        caseFolderGuard.checkWrite(caseFolder, user);
-        caseFolderRepository.deleteById(command.caseFolderId());
-        return null;
-    }
+    // @CommandHandler
+    // public Void handle(DeleteCaseFolderCommand command) {
+    //     var user = securityPort.requireCurrentUser();
+    //     log.debug("Deleting case folder {} (user: {})", command.caseFolderId(), user.username());
+    //     var caseFolder = caseFolderRepository.findById(command.caseFolderId())
+    //         .orElseThrow(() -> new NotFoundException("case-folder.msg.not-found", command.caseFolderId(), CaseFolderAggregate.class));
+    //     caseFolderGuard.checkWrite(caseFolder, user);
+    //     caseFolderRepository.deleteById(command.caseFolderId());
+    //     return null;
+    // }
 
 }
