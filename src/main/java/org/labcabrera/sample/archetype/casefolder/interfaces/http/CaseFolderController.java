@@ -12,6 +12,7 @@ import org.labcabrera.sample.archetype.casefolder.domain.CaseFolder;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CreateCaseFolderRequest;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.CaseFolderDto;
 import org.labcabrera.sample.archetype.casefolder.interfaces.http.dto.UpdateCaseFolderRequest;
+import org.labcabrera.sample.archetype.shared.application.SecurityPort;
 import org.labcabrera.sample.archetype.shared.interfaces.http.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,7 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
     private final CaseFolderDtoMapper mapper;
+    private final SecurityPort securityPort;
 
     @Override
     public ResponseEntity<CaseFolderDto> getCaseFolderById(@PathVariable String caseFolderId) {
@@ -56,12 +58,14 @@ public class CaseFolderController implements CaseFolderControllerDefinition {
 
     @Override
     public ResponseEntity<CaseFolderDto> create(@RequestBody @Validated CreateCaseFolderRequest request) {
+        var user = securityPort.requireCurrentUser();
         var command = new CreateCaseFolderCommand(
             request.name(),
             request.firstSurname(),
             request.lastSurname(),
             request.idCard().type(),
-            request.idCard().number());
+            request.idCard().number(),
+            user.username());
         CaseFolder caseFolder = commandGateway.sendAndWait(command);
         var caseFolderDto = mapper.toDto(caseFolder);
         return ResponseEntity.status(201).body(caseFolderDto);

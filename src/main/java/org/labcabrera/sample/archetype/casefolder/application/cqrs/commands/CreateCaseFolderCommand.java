@@ -14,7 +14,9 @@ public record CreateCaseFolderCommand(
 
     @NotNull IdCardType idCardType,
 
-    @NotNull String idCardNumber
+    @NotNull String idCardNumber,
+
+    @NotNull String owner
 
 ) {
 }
