@@ -42,12 +42,12 @@ public class KafkaEventPublisherConfiguration {
 
         private String routeEventToTopic(Object payload) {
             if (payload instanceof CaseFolderCreatedEvent) {
-                return "case-folder-created";
+                return "sample-axon.case-folders.created.v1";
             }
             else if (payload instanceof CaseFolderUpdatedEvent) {
-                return "case-folder-updated";
+                return "sample-axon.case-folders.updated.v1";
             }
-            return "axon-events";
+            return "sample-axon.axon-events";
         }
     }
 }

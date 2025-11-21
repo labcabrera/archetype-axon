@@ -77,6 +77,7 @@ public class CaseFolderAggregate {
 
     @CommandHandler
     public CaseFolderAggregate(CreateCaseFolderCommand command) {
+        log.info("Creating case folder aggregate {}", command.idCardNumber());
         this.id = UUID.randomUUID().toString();
         this.status = CaseFolderStatus.ACTIVE;
         this.name = command.name();
@@ -92,6 +93,7 @@ public class CaseFolderAggregate {
 
     @CommandHandler
     public void handle(UpdateCaseFolderCommand command) {
+        log.info("Updating case folder aggregate {}", command.caseFolderId());
         this.name = command.name();
         this.firstSurname = command.firstSurname();
         this.lastSurname = command.lastSurname();
