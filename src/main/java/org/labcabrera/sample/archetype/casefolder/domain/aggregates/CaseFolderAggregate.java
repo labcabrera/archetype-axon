@@ -14,13 +14,6 @@ import org.labcabrera.sample.archetype.casefolder.domain.events.CaseFolderUpdate
 import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
 import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCard;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Aggregate
-@Entity
-@Table(name = "case_folder")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,40 +30,29 @@ import lombok.extern.slf4j.Slf4j;
 public class CaseFolderAggregate {
 
     @AggregateIdentifier
-    @Id
-    @Column(name = "id", length = 36)
     @NotNull
     private String id;
 
-    @Column(name = "status", nullable = false, length = 50)
-    @Enumerated(EnumType.STRING)
     @NotNull
     private CaseFolderStatus status;
 
-    @Column(name = "name", nullable = false, length = 100)
     @NotNull
     private String name;
 
-    @Column(name = "first_surname", nullable = false, length = 100)
     @NotNull
     private String firstSurname;
 
-    @Column(name = "last_surname", length = 100)
     private String lastSurname;
 
-    @Embedded
     @NotNull
     private IdCard idCard;
 
-    @Column(name = "owner", nullable = false, length = 100)
     @NotNull
     private String owner;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
     @NotNull
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @CommandHandler

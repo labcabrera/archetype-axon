@@ -1,24 +1,10 @@
 package org.labcabrera.sample.archetype.casefolder.domain.valueobjects;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public record IdCard(
 
-@Embeddable
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class IdCard {
+    IdCardType idCardType,
 
-    @Column(name = "id_card_type", nullable = false, length = 10)
-    @Enumerated(EnumType.STRING)
-    private IdCardType idCardType;
+    String idCardNumber
 
-    @Column(name = "id_card_number", nullable = false, length = 50)
-    private String idCardNumber;
-
+) {
 }

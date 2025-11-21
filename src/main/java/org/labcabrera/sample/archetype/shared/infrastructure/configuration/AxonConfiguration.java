@@ -1,32 +1,34 @@
 package org.labcabrera.sample.archetype.shared.infrastructure.configuration;
 
-import org.axonframework.common.jpa.EntityManagerProvider;
-import org.axonframework.eventhandling.tokenstore.TokenStore;
-import org.axonframework.eventhandling.tokenstore.jpa.JpaTokenStore;
+import org.axonframework.common.lock.LockFactory;
+import org.axonframework.common.lock.PessimisticLockFactory;
+import org.axonframework.eventhandling.EventBus;
+import org.axonframework.modelling.command.Repository;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.serialization.json.JacksonSerializer;
+import org.labcabrera.sample.archetype.casefolder.application.ports.CaseFolderRepository;
+import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
+import org.labcabrera.sample.archetype.casefolder.infrastructure.axon.StateStoredCaseFolderRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import jakarta.persistence.EntityManager;
-
 @Configuration
 public class AxonConfiguration {
 
     @Bean
-    public EntityManagerProvider entityManagerProvider(EntityManager entityManager) {
-        return () -> entityManager;
+    public LockFactory lockFactory() {
+        return PessimisticLockFactory.usingDefaults();
     }
 
     @Bean
-    public TokenStore tokenStore(EntityManagerProvider entityManagerProvider, Serializer serializer) {
-        return JpaTokenStore.builder()
-            .entityManagerProvider(entityManagerProvider)
-            .serializer(serializer)
-            .build();
+    public Repository<CaseFolderAggregate> caseFolderAggregateRepository(
+        CaseFolderRepository caseFolderRepository,
+        LockFactory lockFactory,
+        EventBus eventBus) {
+        return new StateStoredCaseFolderRepository(caseFolderRepository, lockFactory, eventBus);
     }
 
     @Bean
