@@ -4,6 +4,7 @@ spring:
       - classpath:application-logging.yaml
       - classpath:application-db.yaml
       - classpath:application-axon.yaml
+      - classpath:application-kafka.yaml
       # - classpath:application-cloud-stream.yaml
       - classpath:application-springdoc.yaml
       - classpath:application-security.yaml

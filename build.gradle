@@ -51,6 +51,7 @@ dependencies {
 	implementation "cz.jirutka.rsql:rsql-parser:${rsqlParserVersion}"
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	implementation "org.axonframework:axon-spring-boot-starter:${axonVersion}"
+	implementation "org.axonframework.extensions.kafka:axon-kafka-spring-boot-starter:4.7.0"
 
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'

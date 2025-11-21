@@ -1,6 +1,17 @@
 package org.labcabrera.sample.archetype.casefolder.domain.events;
 
-import org.labcabrera.sample.archetype.casefolder.domain.aggregates.CaseFolderAggregate;
+import java.time.LocalDateTime;
 
-public record CaseFolderCreatedEvent(CaseFolderAggregate caseFolder) {
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.CaseFolderStatus;
+import org.labcabrera.sample.archetype.casefolder.domain.valueobjects.IdCard;
+
+public record CaseFolderCreatedEvent(
+    String id,
+    CaseFolderStatus status,
+    String name,
+    String firstSurname,
+    String lastSurname,
+    IdCard idCard,
+    String owner,
+    LocalDateTime createdAt) {
 }

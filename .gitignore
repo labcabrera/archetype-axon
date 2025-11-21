@@ -2,5 +2,5 @@
 .vscode
 build
 out
-AGENTS.md
+*.md
 TODO.txt
