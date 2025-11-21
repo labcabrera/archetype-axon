@@ -1,0 +1,81 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.labcabrera.sample'
+version = '0.1.0-SNAPSHOT'
+description = 'Archetype for Spring Boot using Spring Cloud Stream'
+
+ext {
+	logstashLogbackVersion = '7.4'
+	springdocVersion = '2.7.0'
+	axonVersion = '4.7.5'
+	swaggerAnnotationsVersion = '2.2.13'
+	springCloudVersion = '2025.0.0'
+	rsqlParserVersion = '2.1.0'
+	mapstructVersion = '1.5.5.Final'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'org.springframework.cloud:spring-cloud-stream'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	implementation "net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}"
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+	implementation "cz.jirutka.rsql:rsql-parser:${rsqlParserVersion}"
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	implementation "org.axonframework:axon-spring-boot-starter:${axonVersion}"
+
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+	compileOnly 'org.projectlombok:lombok'
+  	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.annotationProcessorGeneratedSourcesDirectory = file("$buildDir/generated/sources/annotations")
+	options.compilerArgs += ["-Amapstruct.defaultComponentModel=spring"]
+}
+
+jar {
+	enabled = false
+	archiveClassifier = ''
+}
