@@ -1,6 +1,6 @@
 logging:
-  pattern:
-    console: '{"timestamp":"%d{yyyy-MM-dd HH:mm:ss}","level":"%p","thread":"%t","logger":"%c","message":"%m"}\n'
+  # pattern:
+  #   console: '{"timestamp":"%d{yyyy-MM-dd HH:mm:ss}","level":"%p","thread":"%t","logger":"%c","message":"%m"}\n'
   level:
     org.labcabrera: ${LOG_LEVEL:DEBUG} 
     org.apache.kafka: ${KAFKA_LOG_LEVEL:WARN}

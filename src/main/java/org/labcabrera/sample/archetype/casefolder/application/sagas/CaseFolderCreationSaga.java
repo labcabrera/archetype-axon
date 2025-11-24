@@ -18,8 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * NOTA: En este ejemplo, al procesarse dentro del mismo unit-of-work, el evento
+ * CaseFolderCreatedEvent y el envío del comando CreateInitialCaseStepCommand necesitamos
+ * añadir el DeadlineManager al saga para evitar problemas de sincronización.
+ */
 @Saga
 @Slf4j
+@SuppressWarnings("null")
 public class CaseFolderCreationSaga {
 
     private static final String COMPLETE_CASE_FOLDER_DEADLINE = "complete-case-folder";
@@ -49,7 +55,6 @@ public class CaseFolderCreationSaga {
     }
 
     @SagaEventHandler(associationProperty = "caseFolderId")
-    @SuppressWarnings("null")
     public void handle(CaseStepCreatedEvent event) {
         log.info("[SAGA] Case step created successfully: {}. Scheduling case folder completion: {}",
             event.caseStepId(), event.caseFolderId());

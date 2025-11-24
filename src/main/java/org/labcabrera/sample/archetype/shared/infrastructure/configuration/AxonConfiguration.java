@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
+@SuppressWarnings("null")
 public class AxonConfiguration {
 
     @Bean
@@ -45,13 +46,13 @@ public class AxonConfiguration {
     }
 
     @Bean
-    @SuppressWarnings("null")
     public DeadlineManager deadlineManager(org.axonframework.config.Configuration configuration) {
         return SimpleDeadlineManager.builder()
             .scopeAwareProvider(configuration.scopeAwareProvider())
             .build();
     }
 
+    //TODO obtener de ioc
     @Bean
     public Serializer eventSerializer() {
         ObjectMapper objectMapper = new ObjectMapper();
